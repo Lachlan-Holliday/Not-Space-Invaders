@@ -48,8 +48,12 @@ public class GameController {
     }
 
 
-    public void renderGame(){
-
+    public void renderGame() {
+        ui.setStat("Score", "0");
+        ui.setStat("Health", "100");
+        ui.setStat("level", "1");
+        ui.setStat("Time Remaining", (System.currentTimeMillis() - startTime) / 1000 + " seconds");
+        ui.render(model.getSpaceObjects());
     }
 
 
