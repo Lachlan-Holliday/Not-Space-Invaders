@@ -5,9 +5,7 @@ import game.core.*;
 import game.utility.Logger;
 import game.core.SpaceObject;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Represents the game information and state. Stores and manipulates the game state.
@@ -32,6 +30,8 @@ public class GameModel {
 
     private int spawnRate;
 
+    private Ship ship;
+
     /**
      * Models a game, storing and modifying data relevant to the game.
      * Logger argument should be a method reference to a .log method such as the UI.log method.
@@ -49,7 +49,7 @@ public class GameModel {
         this.level = START_LEVEL;
         this.spawnRate = START_SPAWN_RATE;
         this.logger = logger;
-
+        Ship ship = new Ship();
         logger.log("GameModel initialized: Level " + level + ", SpawnRate " + spawnRate);
 
     }
@@ -63,8 +63,39 @@ public class GameModel {
         allSpaceObjects.add(object);
     }
 
+    public void updateGame(int tick) {
+        List<SpaceObject> toRemove = new ArrayList<>();
+
+        for (SpaceObject x : allSpaceObjects) {
+            if ((x.getY() + 1) > GAME_HEIGHT) {
+                toRemove.add(x);
+            } else {
+                x.tick(tick);
+            }
+        }
+
+        allSpaceObjects.removeAll(toRemove);
+    }
+
+    public void checkCollisions() {
+        List<SpaceObject> removeLater = new ArrayList<>();
+        for (SpaceObject obj : allSpaceObjects) {
+            if (obj instanceof Ship) {
+                continue;
+            }
+            if (obj.getX() == ship.getX() && obj.getY() == ship.getY()) {
+                if (obj instanceof PowerUp) {
+                    logger.log("Power-up collected: " + obj.render());
+                    ((PowerUp) obj).applyEffect(ship);
+                }
+            }
 
 
+
+
+
+        }
+    }
 
 
 
