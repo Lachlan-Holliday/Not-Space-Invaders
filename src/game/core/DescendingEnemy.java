@@ -8,7 +8,7 @@ public abstract class DescendingEnemy extends ObjectWithPosition {
     @Override
     public void tick(int tick) {
         if (tick % 10 == 0) {
-            y -= 1;
+            y += 1;
         }
     }
 

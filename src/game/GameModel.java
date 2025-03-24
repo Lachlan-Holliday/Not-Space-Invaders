@@ -49,52 +49,89 @@ public class GameModel {
         this.level = START_LEVEL;
         this.spawnRate = START_SPAWN_RATE;
         this.logger = logger;
-        Ship ship = new Ship();
-        logger.log("GameModel initialized: Level " + level + ", SpawnRate " + spawnRate);
+        this.ship = new Ship();
 
     }
 
     public List<SpaceObject> getSpaceObjects() {
-        return allSpaceObjects;
+        return new ArrayList<>(allSpaceObjects);
     }
 
     public void addObject(SpaceObject object) {
-        logger.log("Added object");
-        allSpaceObjects.add(object);
+        List<SpaceObject> copy = new ArrayList<>(allSpaceObjects);
+        copy.add(object);
+        allSpaceObjects = new ArrayList<>(copy);
     }
 
     public void updateGame(int tick) {
         List<SpaceObject> toRemove = new ArrayList<>();
+        List<SpaceObject> current = new ArrayList<>(allSpaceObjects);
 
-        for (SpaceObject x : allSpaceObjects) {
+
+        for (SpaceObject x : current) {
             if ((x.getY() + 1) > GAME_HEIGHT) {
                 toRemove.add(x);
             } else {
                 x.tick(tick);
             }
         }
+        List<SpaceObject> newList = new ArrayList<>();
+        for (SpaceObject obj : allSpaceObjects) {
+            if (!toRemove.contains(obj)) {
+                newList.add(obj);
+            }
+        }
 
-        allSpaceObjects.removeAll(toRemove);
+        allSpaceObjects = new ArrayList<>(newList);
     }
 
+
     public void checkCollisions() {
+        List<SpaceObject> allSpaceObjectsCopy = new ArrayList<>(allSpaceObjects);
         List<SpaceObject> removeLater = new ArrayList<>();
-        for (SpaceObject obj : allSpaceObjects) {
-            if (obj instanceof Ship) {
+        for (SpaceObject obj : allSpaceObjectsCopy) {
+            if (obj instanceof Ship) { //CHECK IF WE CAN DELETE LATER (Ship may not be in array)
                 continue;
             }
             if (obj.getX() == ship.getX() && obj.getY() == ship.getY()) {
-                if (obj instanceof PowerUp) {
-                    logger.log("Power-up collected: " + obj.render());
-                    ((PowerUp) obj).applyEffect(ship);
+                switch (obj) {
+                    case PowerUp powerUp -> {
+                        logger.log("Power-up collected: " + obj.render());
+                        powerUp.applyEffect(ship);
+                        removeLater.add(obj);
+                    }
+                    case Asteroid asteroid -> {
+                        logger.log("Hit by asteroid! Health reduced by " + ASTEROID_DAMAGE + ".");
+                        ship.takeDamage(ASTEROID_DAMAGE);
+                        removeLater.add(obj);
+                    }
+                    case Enemy enemy -> {
+                        logger.log("Hit by enemy! Health reduced by " + ENEMY_DAMAGE + ".");
+                        ship.takeDamage(ENEMY_DAMAGE);
+                        removeLater.add(obj);
+                    }
+                    default -> {
+                    }
                 }
             }
-
-
-
-
-
         }
+        for (SpaceObject obj1 : allSpaceObjectsCopy) {
+            if (!(obj1 instanceof Bullet)) {
+                continue;
+            }
+
+            for (SpaceObject obj2 : allSpaceObjectsCopy) {
+                if (!(obj2 instanceof Enemy)) {
+                    continue;
+                }
+
+                if (obj1.getX() == obj2.getX() && obj1.getY() == obj2.getY()) {
+                    removeLater.add(obj1);
+                    removeLater.add(obj2);
+                }
+            }
+        }
+        allSpaceObjects.removeAll(removeLater);
     }
 
 

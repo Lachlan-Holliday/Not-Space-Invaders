@@ -1,6 +1,7 @@
 package game;
 
 import game.core.Bullet;
+import game.core.Enemy;
 import game.core.SpaceObject;
 import game.GameModel;
 import game.ui.UI;
@@ -57,11 +58,6 @@ public class GameController {
     }
 
 
-
-
-
-
-
     /**
      * Starts the main game loop.
      *
@@ -69,13 +65,10 @@ public class GameController {
      * @provided
      */
     public void startGame() {
-        // FOR STAGE 0 only, uncomment or remove after
-        model.addObject(new Bullet(2, 14));
-        // END STAGE 0 only
 
         // FOR STAGE 1 only, uncomment or remove after
-        //model.addObject(new Bullet(2, 14));
-        //model.addObject(new Enemy(2, 0));
+        model.addObject(new Bullet(2, 14));
+        model.addObject(new Enemy(2, 0));
         // END STAGE 1 only
 
         ui.onStep(this::onTick);
@@ -96,8 +89,8 @@ public class GameController {
      */
     public void onTick(int tick) {
         renderGame(); // Update Visual
-//        model.updateGame(tick); // Update GameObjects
-//        model.checkCollisions(); // Check for Collisions
+        model.updateGame(tick); // Update GameObjects
+        model.checkCollisions(); // Check for Collisions
 //        model.spawnObjects(); // Handles new spawns
 //        model.levelUp(); // Level up when score threshold is met
     }

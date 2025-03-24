@@ -8,7 +8,9 @@ public class Bullet extends ObjectWithPosition {
         super(x, y);
     }
 
-    public void tick(int tick){}
+    public void tick(int tick) {
+        y -= 1;
+    }
 
 
     public ObjectGraphic render() {
