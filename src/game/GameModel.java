@@ -50,7 +50,7 @@ public class GameModel {
         this.spawnRate = START_SPAWN_RATE;
         this.logger = logger;
         this.ship = new Ship();
-
+        addObject(ship);
     }
 
     public List<SpaceObject> getSpaceObjects() {
@@ -134,6 +134,61 @@ public class GameModel {
         allSpaceObjects.removeAll(removeLater);
     }
 
+    public Ship getShip() {
+        return ship;
+    }
+
+    public void fireBullet() {
+        addObject(new Bullet(ship.getX(), ship.getY()));
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public void levelUp() {
+        if (!(ship.getScore() < level * SCORE_THRESHOLD)) {
+            spawnRate += SPAWN_RATE_INCREASE;
+            level += 1;
+            logger.log("Level Up! Welcome to Level " + level + "Spawn rate increased to " + spawnRate + "%");
+        }
+    }
+
+    public void spawnObjects() {
+        // Asteroid
+        if (random.nextInt(100) < spawnRate) {
+            int x = random.nextInt(GAME_WIDTH);
+            if (!(ship.getX() == x && ship.getY() == 0)) {
+                addObject(new Asteroid(x, 0));
+            }
+        } else {
+            random.nextInt(GAME_WIDTH);
+        }
+
+        // Enemy
+        if (random.nextInt(100) < spawnRate * ENEMY_SPAWN_RATE) {
+            int x = random.nextInt(GAME_WIDTH);
+            if (!(ship.getX() == x && ship.getY() == 0)) {
+                addObject(new Enemy(x, 0));
+            }
+        } else {
+            random.nextInt(GAME_WIDTH);
+        }
+
+        // Power‑Up
+        if (random.nextInt(100) < spawnRate * POWER_UP_SPAWN_RATE) {
+            int x = random.nextInt(GAME_WIDTH);
+            PowerUp powerUp = random.nextBoolean()
+                    ? new ShieldPowerUp(x, 0)
+                    : new HealthPowerUp(x, 0);
+            if (!(ship.getX() == x && ship.getY() == 0)) {
+                addObject(powerUp);
+            }
+        } else {
+            random.nextInt(GAME_WIDTH);
+            random.nextBoolean();
+        }
+    }
 
 
 

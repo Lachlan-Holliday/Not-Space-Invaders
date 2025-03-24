@@ -45,4 +45,9 @@ public class Ship extends Controllable {
     public int getScore() {
         return score;
     }
+
+    public void addScore(int points) {
+        score += points;
+    }
+
 }

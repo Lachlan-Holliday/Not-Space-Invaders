@@ -6,8 +6,10 @@ import game.core.SpaceObject;
 import game.GameModel;
 import game.ui.UI;
 import game.utility.Direction;
+import game.utility.Logger;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -50,7 +52,7 @@ public class GameController {
 
 
     public void renderGame() {
-        ui.setStat("Score", "0");
+        ui.setStat("Score", "0"); //may have to make this the ships score
         ui.setStat("Health", "100");
         ui.setStat("level", "1");
         ui.setStat("Time Remaining", (System.currentTimeMillis() - startTime) / 1000 + " seconds");
@@ -65,15 +67,8 @@ public class GameController {
      * @provided
      */
     public void startGame() {
-
-        // FOR STAGE 1 only, uncomment or remove after
-        model.addObject(new Bullet(2, 14));
-        model.addObject(new Enemy(2, 0));
-        // END STAGE 1 only
-
         ui.onStep(this::onTick);
-        // Uncomment in stage 2
-        //ui.onKey(this::handlePlayerInput); // Pass Callback to UI
+        ui.onKey(this::handlePlayerInput);
     }
 
     /**
@@ -91,8 +86,47 @@ public class GameController {
         renderGame(); // Update Visual
         model.updateGame(tick); // Update GameObjects
         model.checkCollisions(); // Check for Collisions
-//        model.spawnObjects(); // Handles new spawns
-//        model.levelUp(); // Level up when score threshold is met
+        model.spawnObjects(); // Handles new spawns
+        model.levelUp(); // Level up when score threshold is met
     }
+
+    public void pauseGame() {
+        ui.pause();
+        ui.log("Game paused.");
+    }
+
+
+    public void handlePlayerInput(String input) {
+        String[] validInput = new String[]{"W", "A", "S", "D", "F", "P"};
+        if (Arrays.asList(validInput).contains(input.toUpperCase())) {
+            switch (input.toUpperCase()) {
+                case "W" -> {
+                    model.getShip().move(Direction.valueOf("UP"));
+                    ui.log("Core.Ship moved to (\" + model.getShip().getX() + \", \" + model.getShip().getY() + \")");
+                }
+                case "A" -> {
+                    model.getShip().move(Direction.valueOf("LEFT"));
+                    ui.log("Core.Ship moved to (\" + model.getShip().getX() + \", \" + model.getShip().getY() + \")");
+                }
+                case "S" -> {
+                    model.getShip().move(Direction.valueOf("DOWN"));
+                    ui.log("Core.Ship moved to (\" + model.getShip().getX() + \", \" + model.getShip().getY() + \")");
+                }
+                case "D" -> {
+                    model.getShip().move(Direction.valueOf("RIGHT"));
+                    ui.log("Core.Ship moved to (\" + model.getShip().getX() + \", \" + model.getShip().getY() + \")");
+                }
+                case "F" -> {
+                    model.fireBullet();
+                }
+                case "P" -> {
+                    pauseGame();
+                }
+            }
+        } else {
+            ui.log("Invalid input. Use W, A, S, D, F, or P.");
+        }
+    }
+
 }
 

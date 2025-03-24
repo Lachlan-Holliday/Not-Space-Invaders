@@ -23,14 +23,14 @@ public abstract class Controllable extends ObjectWithPosition {
                 if ((x - 1) < 0) {
                     throw new BoundaryExceededException("Cannot move left. Out of bounds!");
                 } else {
-                    x += 1;
+                    x -= 1;
                 }
             }
             case RIGHT -> {
                 if ((x + 1) > GameModel.GAME_WIDTH) {
                     throw new BoundaryExceededException("Cannot move right. Out of bounds!");
                 } else {
-                    x -= 1;
+                    x += 1;
                 }
             }
 
