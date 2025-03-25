@@ -1,11 +1,25 @@
 package game.core;
 
+/**
+ * Represents a power-up in the game.
+ */
 public abstract class PowerUp extends ObjectWithPosition implements PowerUpEffect {
 
+    /**
+     * Creates a new PowerUp with the given coordinate.
+     *
+     * @param x - the x Coordinate.
+     * @param y - the y Coordinate.
+     */
     public PowerUp(int x, int y) {
         super(x, y);
     }
 
+    /**
+     * As PowerUps have no tick-dependent behaviour, this method should be left blank.
+     *
+     * @param tick - the given game tick.
+     */
     public void tick(int tick){}
 
 }
