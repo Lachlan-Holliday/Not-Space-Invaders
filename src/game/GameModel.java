@@ -53,16 +53,36 @@ public class GameModel {
         addObject(ship);
     }
 
+    /**
+     * Returns a list of all SpaceObjects in the game.
+     *
+     * @return a list of all spaceObjects.
+     */
     public List<SpaceObject> getSpaceObjects() {
         return new ArrayList<>(allSpaceObjects);
     }
 
+    /**
+     * Adds a SpaceObject to the game.
+     * Objects are considered part of the game only when they are tracked by the model.
+     *
+     * @param object - the SpaceObject to be added to the game.
+     * @requires object != null.
+     */
     public void addObject(SpaceObject object) {
         List<SpaceObject> copy = new ArrayList<>(allSpaceObjects);
-        copy.add(object);
+        copy.add(object); // ensures no rendering issues
         allSpaceObjects = new ArrayList<>(copy);
     }
 
+    /**
+     * Updates the game state by moving all objects and then removing off-screen objects.
+     *
+     * Objects should be moved by calling .tick(tick) on each object.
+     * Objects are considered off-screen if they are at y-coordinate > GAME_HEIGHT.
+     *
+     * @param tick - the tick value passed through to the objects tick() method.
+     */
     public void updateGame(int tick) {
         List<SpaceObject> toRemove = new ArrayList<>();
         List<SpaceObject> current = new ArrayList<>(allSpaceObjects);
@@ -75,7 +95,7 @@ public class GameModel {
                 x.tick(tick);
             }
         }
-        List<SpaceObject> newList = new ArrayList<>();
+        List<SpaceObject> newList = new ArrayList<>(); //ensures no rendering issues
         for (SpaceObject obj : allSpaceObjects) {
             if (!toRemove.contains(obj)) {
                 newList.add(obj);
@@ -85,7 +105,18 @@ public class GameModel {
         allSpaceObjects = new ArrayList<>(newList);
     }
 
-
+    /**
+     * Detects and handles collisions between spaceObjects (Ship and Bullet collisions).
+     * Objects are considered to be colliding if they share x and y coordinates.
+     *
+     * First checks ship collision: - If the ship is colliding with a powerup, apply the effect, and .log("Power-up collected: " + obj.render())
+     * - If the ship is colliding with an asteroid, take the appropriate damage, and .log("Hit by asteroid! Health reduced by " + ASTEROID_DAMAGE + ".")
+     * - If the ship is colliding with an enemy, take the appropriate damage, and .log("Hit by enemy! Health reduced by " + ENEMY_DAMAGE + ".")
+     * For any collisions with the ship, the colliding object should be removed.
+     *
+     * Then check bullet collision:
+     * If a bullet collides with an enemy, remove both the enemy and the bullet. No logging required.
+     */
     public void checkCollisions() {
         List<SpaceObject> allSpaceObjectsCopy = new ArrayList<>(allSpaceObjects);
         List<SpaceObject> removeLater = new ArrayList<>();
@@ -134,18 +165,41 @@ public class GameModel {
         allSpaceObjects.removeAll(removeLater);
     }
 
+    /**
+     * Returns the ship instance in the game.
+     *
+     * @return the current ship instance.
+     */
     public Ship getShip() {
         return ship;
     }
 
+    /**
+     * Fires a bullet from the ship's current position.
+     *
+     * Creates a new bullet at the coordinates the ship occupies.
+     * Logs "Core.Bullet fired!"
+     */
     public void fireBullet() {
         addObject(new Bullet(ship.getX(), ship.getY()));
     }
 
+    /**
+     * Returns the current level.
+     *
+     * @return the current level.
+     */
     public int getLevel() {
         return level;
     }
 
+    /**
+     * If level progression requirements are satisfied, levels up the game by increasing the spawn rate and level number.
+     *
+     * To level up, the score must not be less than the current level multiplied by the score threshold.
+     * To increase the level the spawn rate should increase by SPAWN_RATE_INCREASE, and the level number should increase by 1.
+     * If the level is increased, log the following: "Level Up! Welcome to Level {new level}. Spawn rate increased to {new spawn rate}%."
+     */
     public void levelUp() {
         if (!(ship.getScore() < level * SCORE_THRESHOLD)) {
             spawnRate += SPAWN_RATE_INCREASE;
@@ -154,6 +208,24 @@ public class GameModel {
         }
     }
 
+    /**
+     * Spawns new objects (asteroids, enemies, and power-ups) at random positions. Uses this.random to make EXACTLY 6 calls to random.nextInt() and 1 random.nextBoolean.
+     *
+     * Random calls should be in the following order:
+     * 1. Check if an asteroid should spawn (random.nextInt(100) < spawnRate)
+     * 2. If spawning an asteroid, spawn at x-coordinate = random.nextInt(GAME_WIDTH)
+     * 3. Check if an enemy should spawn (random.nextInt(100) < spawnRate * ENEMY_SPAWN_RATE)
+     * 4. If spawning an enemy, spawn at x-coordinate = random.nextInt(GAME_WIDTH)
+     * 5. Check if a power-up should spawn (random.nextInt(100) < spawnRate * POWER_UP_SPAWN_RATE)
+     * 6. If spawning a power-up, spawn at x-coordinate = random.nextInt(GAME_WIDTH)
+     * 7. If spawning a power-up, spawn a ShieldPowerUp if random.nextBoolean(), else a HealthPowerUp.
+     *
+     * Failure to match random calls correctly will result in failed tests.
+     *
+     * Objects spawn at y = 0 (top of the screen).
+     * Objects may not spawn if there is a ship at the intended spawn location.
+     * This should NOT impact calls to random.
+     */
     public void spawnObjects() {
         // Asteroid
         if (random.nextInt(100) < spawnRate) {

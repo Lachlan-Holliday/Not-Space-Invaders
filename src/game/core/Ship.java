@@ -2,6 +2,9 @@ package game.core;
 
 import game.ui.ObjectGraphic;
 
+/**
+ *  Represents the player's ship.
+ */
 public class Ship extends Controllable {
     private int health;
 
@@ -50,23 +53,51 @@ public class Ship extends Controllable {
     @Override
     public void tick(int tick) {}
 
+    /**
+     * Reduces the ship's health by the specified damage amount.
+     * A ship's health can never fall below 0.
+     *
+     * @param damage - the amount of damage taken.
+     */
 
     public void takeDamage(int damage) {
         health = Math.min(health - damage, 0);
     }
 
+    /**
+     * Heals the ship by the specified amount.
+     * A ship's health can never rise above 100.
+     *
+     * @param amount  - the amount of health restored.
+     */
     public void heal(int amount) {
         health = Math.max(health + amount, 100);
     }
 
+    /**
+     * Returns the current health of the ship.
+     *
+     * @return the current health.
+     */
     public int getHealth() {
         return health;
     }
+
+    /**
+     * Returns the current score of the ship.
+     *
+     * @return the current score.
+     */
 
     public int getScore() {
         return score;
     }
 
+    /**
+     * Adds points to the ship's score.
+     *
+     * @param points - the points to add.
+     */
     public void addScore(int points) {
         score += points;
     }
