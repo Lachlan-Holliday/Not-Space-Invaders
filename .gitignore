@@ -2,4 +2,5 @@
 assets
 out
 CSSE2002_A1.iml
-Main
+src/game/Main.java
+src/game/ui
