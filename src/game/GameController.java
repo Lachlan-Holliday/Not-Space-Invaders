@@ -1,3 +1,4 @@
+
 package game;
 
 import game.core.Bullet;
@@ -50,12 +51,18 @@ public class GameController {
         this(ui, new GameModel(ui::log));
     }
 
-
+    /**
+     * Renders the current game state, including score, health, and ship position.
+     * - Uses ui.setStat() to update the "Score", "Health" and "Level" appropriately with information from the model.
+     * - Uses ui.setStat() to update "Time Survived" with (System.currentTimeMillis() - startTime) / 1000 + " seconds"
+     * - Renders all SpaceObjects (including the Ship) using a single call to ui.render().
+     *
+     */
     public void renderGame() {
         ui.setStat("Score", "0"); //may have to make this the ships score
         ui.setStat("Health", "100");
         ui.setStat("level", "1");
-        ui.setStat("Time Remaining", (System.currentTimeMillis() - startTime) / 1000 + " seconds");
+        ui.setStat("Time Survived", (System.currentTimeMillis() - startTime) / 1000 + " seconds");
         ui.render(model.getSpaceObjects());
     }
 
@@ -68,7 +75,7 @@ public class GameController {
      */
     public void startGame() {
         ui.onStep(this::onTick);
-        ui.onKey(this::handlePlayerInput);
+        ui.onKey(this::handlePlayerInput); // Registers key input
     }
 
     /**
@@ -90,31 +97,72 @@ public class GameController {
         model.levelUp(); // Level up when score threshold is met
     }
 
+    /**
+     *  Calls ui.pause() to pause the game until the method is called again.
+     *  Logs "Game paused." after calling ui.pause().
+     */
     public void pauseGame() {
         ui.pause();
         ui.log("Game paused.");
     }
 
+    /**
+     * Returns the current game model.
+     *
+     * @return the current game model.
+     */
+    public GameModel getModel() {
+        return model;
+    }
 
+    /**
+     * Handles player input and performs actions such as moving the ship or firing bullets.
+     * Uppercase and lowercase inputs should be treated identically:
+     * - For movement keys "W", "A", "S" and "D" the ship should be moved up, left, down,
+     *   or right respectively The following should also be logged:
+     * "Core.Ship moved to (" + model.getShip().getX() + ", " + model.getShip().getY() + ")"
+     * - For input "F" the fireBullet() method of the model should be called.
+     * - For input "P" the pauseGame() method should be called.
+     * - For all other inputs, the following should be logged: "Invalid input.
+     *   Use W, A, S, D, F, or P."
+     *
+     * @param input - the player's input command.
+     */
     public void handlePlayerInput(String input) {
         String[] validInput = new String[]{"W", "A", "S", "D", "F", "P"};
         if (Arrays.asList(validInput).contains(input.toUpperCase())) {
             switch (input.toUpperCase()) {
                 case "W" -> {
                     model.getShip().move(Direction.valueOf("UP"));
-                    ui.log("Core.Ship moved to (\" + model.getShip().getX() + \", \" + model.getShip().getY() + \")");
+                    ui.log("Core.Ship moved to (\""
+                            + model.getShip().getX()
+                            + "\", \""
+                            + model.getShip().getY()
+                            + "\")");
                 }
                 case "A" -> {
                     model.getShip().move(Direction.valueOf("LEFT"));
-                    ui.log("Core.Ship moved to (\" + model.getShip().getX() + \", \" + model.getShip().getY() + \")");
+                    ui.log("Core.Ship moved to (\""
+                            + model.getShip().getX()
+                            + "\", \""
+                            + model.getShip().getY()
+                            + "\")");
                 }
                 case "S" -> {
                     model.getShip().move(Direction.valueOf("DOWN"));
-                    ui.log("Core.Ship moved to (\" + model.getShip().getX() + \", \" + model.getShip().getY() + \")");
+                    ui.log("Core.Ship moved to (\""
+                            + model.getShip().getX()
+                            + "\", \""
+                            + model.getShip().getY()
+                            + "\")");
                 }
                 case "D" -> {
                     model.getShip().move(Direction.valueOf("RIGHT"));
-                    ui.log("Core.Ship moved to (\" + model.getShip().getX() + \", \" + model.getShip().getY() + \")");
+                    ui.log("Core.Ship moved to (\""
+                            + model.getShip().getX()
+                            + "\", \""
+                            + model.getShip().getY()
+                            + "\")");
                 }
                 case "F" -> {
                     model.fireBullet();
@@ -129,4 +177,3 @@ public class GameController {
     }
 
 }
-

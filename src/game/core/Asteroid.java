@@ -5,15 +5,15 @@ import game.ui.ObjectGraphic;
 
 /**
  * Asteroid class is a child of DescendingEnemy.
- * It allows you to render and construct a new Asteroid.
+ * The class allows you to render and construct a new Asteroid.
  */
 public class Asteroid extends DescendingEnemy {
 
     /**
      * Initializes a new Asteroid instance with coordinates x and y.
      *
-     * @param x  - the x Coordinate
-     * @param y  - the y Coordinate
+     * @param x - the x Coordinate.
+     * @param y - the y Coordinate.
      */
     public Asteroid(int x, int y) {
         super(x, y);
@@ -25,6 +25,7 @@ public class Asteroid extends DescendingEnemy {
      *      - The text representation is "🌑".
      *      - The image path is "assets/asteroid.png"
      *
+     * @return ObjectGraphic - the appropriate new ObjectGraphic
      */
     @Override
     public ObjectGraphic render() {
