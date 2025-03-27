@@ -4,3 +4,4 @@ out
 CSSE2002_A1.iml
 src/game/Main.java
 src/game/ui
+src/game/utility/Direction.java
