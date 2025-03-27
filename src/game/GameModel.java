@@ -44,7 +44,7 @@ public class GameModel {
      *
      * @param logger a functional interface for passing information between classes.
      */
-    public GameModel (Logger logger) {
+    public GameModel(Logger logger) {
         this.allSpaceObjects = new ArrayList<>();
         this.level = START_LEVEL;
         this.spawnRate = START_SPAWN_RATE;
@@ -152,13 +152,12 @@ public class GameModel {
             }
 
             for (SpaceObject obj2 : allSpaceObjectsCopy) {
-                if (!(obj2 instanceof Enemy)) {
-                    continue;
-                }
-
-                if (obj1.getX() == obj2.getX() && obj1.getY() == obj2.getY()) {
-                    removeLater.add(obj1);
-                    removeLater.add(obj2);
+                if (obj2 instanceof Enemy) { // Now only checking enemies, ignoring asteroids
+                    if (obj1.getX() == obj2.getX() && obj1.getY() == obj2.getY()) {
+                        removeLater.add(obj1); // Remove bullet
+                        removeLater.add(obj2); // Remove enemy
+                        logger.log("Bullet hit enemy! Removed.");
+                    }
                 }
             }
         }
@@ -182,6 +181,7 @@ public class GameModel {
      */
     public void fireBullet() {
         addObject(new Bullet(ship.getX(), ship.getY()));
+        logger.log("Core.Bullet fired!");
     }
 
     /**
@@ -204,12 +204,18 @@ public class GameModel {
         if (!(ship.getScore() < level * SCORE_THRESHOLD)) {
             spawnRate += SPAWN_RATE_INCREASE;
             level += 1;
-            logger.log("Level Up! Welcome to Level " + level + "Spawn rate increased to " + spawnRate + "%");
+            logger.log("Level Up! Welcome to Level "
+                    + level
+                    + " Spawn rate increased to "
+                    + spawnRate
+                    + "%");
+
         }
     }
 
     /**
-     * Spawns new objects (asteroids, enemies, and power-ups) at random positions. Uses this.random to make EXACTLY 6 calls to random.nextInt() and 1 random.nextBoolean.
+     * Spawns new objects (asteroids, enemies, and power-ups) at random positions.
+     * Uses this.random to make EXACTLY 6 calls to random.nextInt() and 1 random.nextBoolean.
      *
      * Random calls should be in the following order:
      * 1. Check if an asteroid should spawn (random.nextInt(100) < spawnRate)

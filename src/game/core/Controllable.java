@@ -28,7 +28,7 @@ public abstract class Controllable extends ObjectWithPosition {
      *
      * @throws BoundaryExceededException - if attempting to move outside the game boundaries.
      */
-    public void move(Direction direction) {
+    public void move(Direction direction) throws BoundaryExceededException {
         switch (direction) {
             case UP -> {
                 if ((y + 1) > GameModel.GAME_HEIGHT) {
